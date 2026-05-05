@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Home — A Cozy Gallery</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet"/>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { overflow:hidden; background:#0c0906; }
+canvas { display:block; }
+
+/* ── SPLASH ── */
+#splash {
+  position:fixed; inset:0; z-index:100;
+  background:#0c0906;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  transition: opacity 1.2s ease;
+}
+#splash.hidden { opacity:0; pointer-events:none; }
+.splash-inner { text-align:center; animation: riseIn 1.8s ease both; }
+.splash-rule { width:60px; height:1px; background:rgba(210,180,140,.3); margin:1.4rem auto; }
+
+#splash h1 {
+  font-family:'Cormorant Garamond', serif;
+  font-size: clamp(3rem,9vw,5.8rem);
+  font-weight:300; letter-spacing:.28em;
+  color:#e8d8bc; text-transform:uppercase;
+}
+#splash .subtitle {
+  font-family:'Raleway', sans-serif; font-size:.7rem; font-weight:200;
+  letter-spacing:.38em; color:rgba(210,190,160,.5); text-transform:uppercase;
+}
+.controls-card {
+  margin-top:2.4rem; padding:1.3rem 2rem;
+  border:1px solid rgba(210,180,140,.13); display:inline-block;
+}
+.ctrl-row {
+  display:flex; align-items:center; gap:1.2rem;
+  font-family:'Raleway', sans-serif; font-size:.65rem; font-weight:200;
+  letter-spacing:.14em; color:rgba(210,190,160,.42); text-transform:uppercase;
+}
+.ctrl-row + .ctrl-row { margin-top:.65rem; }
+.ctrl-key {
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:28px; height:26px; padding:0 6px;
+  border:1px solid rgba(210,180,140,.22); font-size:.68rem;
+  color:rgba(210,190,160,.55); border-radius:2px; flex-shrink:0;
+}
+#enter-btn {
+  margin-top:2.2rem;
+  font-family:'Raleway', sans-serif; font-size:.68rem; letter-spacing:.28em;
+  color:rgba(210,190,160,.5); text-transform:uppercase;
+  background:none; border:1px solid rgba(210,180,140,.18);
+  padding:.7rem 2rem; cursor:pointer; transition:all .35s;
+}
+#enter-btn:hover { color:#e8d8bc; border-color:rgba(210,180,140,.45); background:rgba(210,180,140,.04); }
+.splash-hint {
+  margin-top:1.8rem; font-family:'Raleway',sans-serif; font-size:.62rem;
+  letter-spacing:.2em; color:rgba(210,190,160,.28); text-transform:uppercase;
+  animation: pulse 2.8s ease infinite;
+}
+
+/* ── HUD ── */
+#crosshair {
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:18px; height:18px; pointer-events:none; z-index:5; opacity:0;
+  transition:opacity .8s;
+}
+#crosshair::before,#crosshair::after {
+  content:''; position:absolute; background:rgba(220,195,155,.45);
+}
+#crosshair::before { width:100%; height:1px; top:50%; left:0; }
+#crosshair::after  { height:100%; width:1px; left:50%; top:0; }
+#crosshair.on { opacity:1; }
+
+#ihint {
+  position:fixed; bottom:26px; left:50%; transform:translateX(-50%);
+  font-family:'Raleway',sans-serif; font-size:.62rem; letter-spacing:.22em;
+  text-transform:uppercase; color:rgba(220,195,155,.38);
+  pointer-events:none; opacity:0; transition:opacity .4s;
+}
+#ihint.on { opacity:1; }
+
+/* ── PANEL ── */
+#panel {
+  position:fixed; bottom:0; left:50%; transform:translateX(-50%) translateY(100%);
+  width:min(500px,92vw);
+  background:rgba(11,8,5,.94);
+  border:1px solid rgba(210,180,140,.15); border-bottom:none;
+  padding:2rem 2.5rem 2rem; z-index:50;
+  transition:transform .52s cubic-bezier(.16,1,.3,1);
+  pointer-events:none;
+}
+#panel.open { transform:translateX(-50%) translateY(0); pointer-events:all; }
+#plabel {
+  font-family:'Raleway',sans-serif; font-size:.58rem; letter-spacing:.32em;
+  text-transform:uppercase; color:rgba(210,180,140,.35); margin-bottom:.55rem;
+}
+#ptitle {
+  font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:400;
+  font-style:italic; color:#e8d8bc; letter-spacing:.04em; margin-bottom:.9rem;
+}
+#pbody {
+  font-family:'Cormorant Garamond',serif; font-size:1.05rem; font-weight:300;
+  line-height:1.9; color:rgba(220,200,168,.7);
+}
+#pclose {
+  margin-top:1.3rem; display:inline-block; cursor:pointer;
+  font-family:'Raleway',sans-serif; font-size:.58rem; letter-spacing:.26em;
+  text-transform:uppercase; color:rgba(210,180,140,.38);
+  border-bottom:1px solid rgba(210,180,140,.12); transition:color .2s;
+}
+#pclose:hover { color:rgba(210,180,140,.7); }
+
+@keyframes riseIn { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:none} }
+@keyframes pulse  { 0%,100%{opacity:.28} 50%{opacity:.55} }
+</style>
+</head>
+<body>
+
+<!-- SPLASH SCREEN -->
+<div id="splash">
+  <div class="splash-inner">
+    <p class="subtitle">a cozy gallery</p>
+    <div class="splash-rule"></div>
+    <h1>Home</h1>
+    <div class="splash-rule"></div>
+    <div class="controls-card">
+      <div class="ctrl-row">
+        <span class="ctrl-key">W</span><span class="ctrl-key">A</span><span class="ctrl-key">S</span><span class="ctrl-key">D</span>
+        walk through the gallery
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-key">mouse</span> look around
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-key">click</span> open artworks &amp; books
+      </div>
+    </div>
+    <button id="enter-btn">enter the gallery</button>
+    <p class="splash-hint">click anywhere to begin</p>
+  </div>
+</div>
+
+<!-- CROSSHAIR -->
+<div id="crosshair"></div>
+
+<!-- INTERACT HINT -->
+<div id="ihint">click to read</div>
+
+<!-- INFO PANEL -->
+<div id="panel">
+  <div id="plabel">gallery note</div>
+  <div id="ptitle"></div>
+  <div id="pbody"></div>
+  <span id="pclose">close</span>
+</div>
+
+<!-- THREE.JS CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- YOUR SKETCH -->
+<script src="sketch.js"></script>
+
+</body>
+</html>
